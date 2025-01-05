@@ -48,79 +48,62 @@ public class InterfazController {
     private TextField txtNumPaciente;
 
     /**
-     * Se ejecuta al hacer clic en el botón "Generar informe".
-     * Realiza la validación de los campos y muestra un alert con los errores.
-     * Si es válido, se genera el informe.
+     * Acción del botón "Generar informe". Valida los campos del formulario y, si son correctos, genera el informe Jasper.
+     * Si hay errores, muestra un mensaje con los problemas detectados.
      */
     @FXML
     void generarInforme(ActionEvent event) {
         StringBuilder errores = new StringBuilder();
 
-        // Validación del campo "Número de paciente"
         if (!esNumeroEntero(txtNumPaciente.getText())) {
             errores.append("El 'Número de paciente' debe ser un número entero.\n");
         }
 
-        // Validación del campo "Código del médico"
         if (!esNumeroEntero(txtCodMedico.getText())) {
             errores.append("El 'Código del médico' debe ser un número entero.\n");
         }
 
-        // Validación del campo "Nombre del paciente"
         if (txtNomPaciente.getText().trim().isEmpty()) {
             errores.append("El 'Nombre del paciente' no puede estar vacío.\n");
         }
 
-        // Validación del campo "Nombre del médico"
         if (txtNomMedico.getText().trim().isEmpty()) {
             errores.append("El 'Nombre del médico' no puede estar vacío.\n");
         }
 
-        // Validación del campo "Especialidad del médico"
         if (txtEspMedico.getText().trim().isEmpty()) {
             errores.append("La 'Especialidad del médico' no puede estar vacía.\n");
         }
 
-        // Validación del campo "Tratamiento"
         if (txaTratamiento.getText().trim().isEmpty()) {
             errores.append("El 'Tratamiento' no puede estar vacío.\n");
         }
 
-        // Si hay errores, mostramos el alert con todos los errores
         if (errores.length() > 0) {
             mostrarError("Errores en el formulario", errores.toString());
         } else {
-            // Obtener los valores de los campos del formulario
-            String numPaciente = txtNumPaciente.getText();
-            String nomPaciente = txtNomPaciente.getText();
-            String dirPaciente = txtDirPaciente.getText();
-            String codMedico = txtCodMedico.getText();
-            String nomMedico = txtNomMedico.getText();
-            String espMedico = txtEspMedico.getText();
-            String tratamiento = txaTratamiento.getText();
-
-            // Crear un mapa de parámetros para pasar al informe
             Map<String, Object> parameters = new HashMap<>();
-            parameters.put("NUM_PACIENTE", Integer.parseInt(numPaciente));
-            parameters.put("NOM_PACIENTE", nomPaciente);
-            parameters.put("DIR_PACIENTE", dirPaciente);
-            parameters.put("COD_MEDICO", Integer.parseInt(codMedico));
-            parameters.put("NOM_MEDICO", nomMedico);
-            parameters.put("ESP_MEDICO", espMedico);
-            parameters.put("TRATAMIENTO", tratamiento);
+            parameters.put("NUM_PACIENTE", Integer.parseInt(txtNumPaciente.getText()));
+            parameters.put("NOM_PACIENTE", txtNomPaciente.getText());
+            parameters.put("DIR_PACIENTE", txtDirPaciente.getText());
+            parameters.put("COD_MEDICO", Integer.parseInt(txtCodMedico.getText()));
+            parameters.put("NOM_MEDICO", txtNomMedico.getText());
+            parameters.put("ESP_MEDICO", txtEspMedico.getText());
+            parameters.put("TRATAMIENTO", txaTratamiento.getText());
             parameters.put("IMAGE_PATH", getClass().getResource("/img/").toString());
 
-            // Generar el informe con los parámetros
             generarReporte("/JasperReport/formularioMedico.jasper", parameters);
         }
     }
 
+    /**
+     * Genera y muestra un informe Jasper usando el archivo y los parámetros proporcionados.
+     *
+     * @param reportePath ruta del archivo Jasper.
+     * @param parameters  mapa de parámetros del informe.
+     */
     private void generarReporte(String reportePath, Map<String, Object> parameters) {
         try {
-            // Conectar a la base de datos (en este caso, no estamos usando base de datos, así que utilizamos JREmptyDataSource)
-            JREmptyDataSource dataSource = new JREmptyDataSource();
-
-            // Cargar el archivo JasperReport
             InputStream reportStream = getClass().getResourceAsStream(reportePath);
 
             if (reportStream == null) {
@@ -128,13 +111,8 @@ public class InterfazController {
                 return;
             }
 
-            // Cargar el reporte
             JasperReport report = (JasperReport) JRLoader.loadObject(reportStream);
-
-            // Llenar el reporte con los datos (parámetros y dataSource vacío)
-            JasperPrint jprint = JasperFillManager.fillReport(report, parameters,dataSource);
-
-            // Mostrar el reporte
+            JasperPrint jprint = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
             JasperViewer viewer = new JasperViewer(jprint, false);
             viewer.setVisible(true);
 
@@ -147,8 +125,8 @@ public class InterfazController {
     /**
      * Valida si el texto ingresado es un número entero.
      *
-     * @param texto El texto a validar.
-     * @return true si el texto es un número entero, false si no lo es.
+     * @param texto texto a validar.
+     * @return true si es un número entero, false en caso contrario.
      */
     private boolean esNumeroEntero(String texto) {
         try {
@@ -160,22 +138,21 @@ public class InterfazController {
     }
 
     /**
-     * Muestra un cuadro de diálogo con un mensaje de error.
+     * Muestra un cuadro de diálogo de error con el título y mensaje especificados.
      *
-     * @param titulo El título del cuadro de diálogo.
-     * @param mensaje El mensaje a mostrar en el cuadro de diálogo.
+     * @param titulo  título del cuadro de diálogo.
+     * @param mensaje mensaje que describe el error.
      */
     private void mostrarError(String titulo, String mensaje) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(titulo);
-        alert.setHeaderText(null); // No queremos un encabezado
-        alert.setContentText(mensaje); // El mensaje que queremos mostrar
-        alert.showAndWait(); // Mostrar el mensaje y esperar a que el usuario lo cierre
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 
     /**
-     * Se ejecuta al hacer clic en el botón "Limpiar".
-     * Limpia todos los campos del formulario.
+     * Acción del botón "Limpiar". Borra todos los campos del formulario.
      */
     @FXML
     void limpiarFormulario(ActionEvent event) {
@@ -189,13 +166,10 @@ public class InterfazController {
     }
 
     /**
-     * Se ejecuta al hacer clic en el botón "Salir".
-     * Cierra la aplicación.
+     * Acción del botón "Salir". Cierra la aplicación.
      */
     @FXML
     void salir(ActionEvent event) {
-        // Cerrar la aplicación
         System.exit(0);
     }
-
 }
