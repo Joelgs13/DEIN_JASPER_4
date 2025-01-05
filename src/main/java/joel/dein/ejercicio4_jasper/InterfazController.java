@@ -101,13 +101,14 @@ public class InterfazController {
 
             // Crear un mapa de parámetros para pasar al informe
             Map<String, Object> parameters = new HashMap<>();
-            parameters.put("NUM_PACIENTE", numPaciente);
+            parameters.put("NUM_PACIENTE", Integer.parseInt(numPaciente));
             parameters.put("NOM_PACIENTE", nomPaciente);
             parameters.put("DIR_PACIENTE", dirPaciente);
-            parameters.put("COD_MEDICO", codMedico);
+            parameters.put("COD_MEDICO", Integer.parseInt(codMedico));
             parameters.put("NOM_MEDICO", nomMedico);
             parameters.put("ESP_MEDICO", espMedico);
             parameters.put("TRATAMIENTO", tratamiento);
+            parameters.put("IMAGE_PATH", getClass().getResource("/img/").toString());
 
             // Generar el informe con los parámetros
             generarReporte("/JasperReport/formularioMedico.jasper", parameters);
@@ -131,7 +132,7 @@ public class InterfazController {
             JasperReport report = (JasperReport) JRLoader.loadObject(reportStream);
 
             // Llenar el reporte con los datos (parámetros y dataSource vacío)
-            JasperPrint jprint = JasperFillManager.fillReport(report, parameters);
+            JasperPrint jprint = JasperFillManager.fillReport(report, parameters,dataSource);
 
             // Mostrar el reporte
             JasperViewer viewer = new JasperViewer(jprint, false);
