@@ -6,6 +6,14 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.view.JasperViewer;
+
+import java.io.InputStream;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class InterfazController {
 
@@ -42,7 +50,7 @@ public class InterfazController {
     /**
      * Se ejecuta al hacer clic en el botón "Generar informe".
      * Realiza la validación de los campos y muestra un alert con los errores.
-     * Si todo es válido, se genera el informe.
+     * Si es válido, se genera el informe.
      */
     @FXML
     void generarInforme(ActionEvent event) {
@@ -82,8 +90,56 @@ public class InterfazController {
         if (errores.length() > 0) {
             mostrarError("Errores en el formulario", errores.toString());
         } else {
-            // Si no hay errores, se puede proceder a generar el informe (código que se puede agregar aquí)
-            System.out.println("Generar el informe...");
+            // Obtener los valores de los campos del formulario
+            String numPaciente = txtNumPaciente.getText();
+            String nomPaciente = txtNomPaciente.getText();
+            String dirPaciente = txtDirPaciente.getText();
+            String codMedico = txtCodMedico.getText();
+            String nomMedico = txtNomMedico.getText();
+            String espMedico = txtEspMedico.getText();
+            String tratamiento = txaTratamiento.getText();
+
+            // Crear un mapa de parámetros para pasar al informe
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("NUM_PACIENTE", numPaciente);
+            parameters.put("NOM_PACIENTE", nomPaciente);
+            parameters.put("DIR_PACIENTE", dirPaciente);
+            parameters.put("COD_MEDICO", codMedico);
+            parameters.put("NOM_MEDICO", nomMedico);
+            parameters.put("ESP_MEDICO", espMedico);
+            parameters.put("TRATAMIENTO", tratamiento);
+
+            // Generar el informe con los parámetros
+            generarReporte("/JasperReport/formularioMedico.jasper", parameters);
+        }
+    }
+
+    private void generarReporte(String reportePath, Map<String, Object> parameters) {
+        try {
+            // Conectar a la base de datos (en este caso, no estamos usando base de datos, así que utilizamos JREmptyDataSource)
+            JREmptyDataSource dataSource = new JREmptyDataSource();
+
+            // Cargar el archivo JasperReport
+            InputStream reportStream = getClass().getResourceAsStream(reportePath);
+
+            if (reportStream == null) {
+                System.out.println("El archivo no está allí: " + reportePath);
+                return;
+            }
+
+            // Cargar el reporte
+            JasperReport report = (JasperReport) JRLoader.loadObject(reportStream);
+
+            // Llenar el reporte con los datos (parámetros y dataSource vacío)
+            JasperPrint jprint = JasperFillManager.fillReport(report, parameters);
+
+            // Mostrar el reporte
+            JasperViewer viewer = new JasperViewer(jprint, false);
+            viewer.setVisible(true);
+
+        } catch (JRException e) {
+            e.printStackTrace();
+            mostrarError("Error al generar el informe", "No se pudo generar el informe.");
         }
     }
 

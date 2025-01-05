@@ -1,0 +1,60 @@
+/* Fondo de la pantalla */
+.root {
+    -fx-background-color: #f0f4f8; /* Un color azul suave de fondo */
+}
+
+/* Estilo para los títulos */
+.label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #3f5c72; /* Un color de texto azul oscuro */
+    -fx-font-weight: bold;
+}
+
+/* Botones */
+.button {
+    -fx-background-color: #6fa3d9; /* Color azul suave para los botones */
+    -fx-text-fill: white; /* Texto blanco */
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 20px; /* Esquinas redondeadas */
+    -fx-border-radius: 20px; /* Esquinas redondeadas */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 5, 0, 0, 1); /* Sombra suave */
+}
+
+.button:hover {
+    -fx-background-color: #4f8bbf; /* Cambio de color en hover */
+}
+
+/* Campos de texto */
+.text-field, .text-area {
+    -fx-background-color: #ffffff; /* Fondo blanco */
+    -fx-text-fill: #3f5c72; /* Texto en azul oscuro */
+    -fx-border-color: #a5c7e4; /* Color azul claro para el borde */
+    -fx-border-radius: 10px; /* Esquinas redondeadas */
+    -fx-padding: 10px;
+    -fx-font-size: 14px;
+}
+
+/* Estilo para el área de texto */
+.text-area {
+    -fx-pref-height: 150px; /* Altura preferida */
+    -fx-pref-width: 400px; /* Ancho preferido */
+}
+
+/* Campos de texto cuando el campo está enfocado */
+.text-field:focused, .text-area:focused {
+    -fx-border-color: #6fa3d9; /* Borde azul cuando está enfocado */
+    -fx-background-color: #f0f8ff; /* Fondo azul muy suave */
+}
+
+/* Espaciado entre los elementos del formulario */
+.grid-pane {
+    -fx-hgap: 20px;
+    -fx-vgap: 20px;
+}
+
+/* Espaciado para los botones */
+.hbox {
+    -fx-padding: 20px;
+    -fx-spacing: 30px;
+}
